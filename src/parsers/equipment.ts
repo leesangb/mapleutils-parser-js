@@ -15,7 +15,11 @@ type EquipmentStat = Record<'base' | 'scroll' | 'flame', Partial<Record<Stat, nu
 type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: [Stat, number] }
 
 export class EquipmentParser {
-    parse(equipmentHtml: string): Partial<Equipment> | null {
+    /**
+     * 장비 정보 html에서 장비 효과를 파싱하여 반환
+     * @param equipmentHtml 장비 html
+     */
+    parse(equipmentHtml: string): Equipment | null {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
         const { name, upgrade, star } = this.parseName(node);
