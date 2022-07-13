@@ -40,6 +40,7 @@ const statList = [
     'drop', // 아이템드롭률
     'hpHeal', // 회복
     'passive', // 패시브1렙
+    'reuse', // 재사용
 ] as const;
 
 export type Stat = typeof statList[number];

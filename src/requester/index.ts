@@ -2,16 +2,20 @@ import axios from 'axios';
 import { MAPLESTORY_RANKING_SEARCH } from '../constants/links';
 import { EquipmentParser } from '../parsers/equipment';
 import { EquipmentLinks, HomePageParser } from '../parsers/homepage';
+import { SpecParser } from '../parsers/spec';
 import { Equipment } from '../types/Equipment';
+import { Spec } from '../types/Spec';
 
 
 export class Requester {
     private homePageParser: HomePageParser;
     private equipmentParser: EquipmentParser;
+    private specParser: SpecParser;
 
-    constructor(homePageParser: HomePageParser, equipmentParser: EquipmentParser) {
+    constructor(homePageParser: HomePageParser, equipmentParser: EquipmentParser, specParser: SpecParser) {
         this.homePageParser = homePageParser;
         this.equipmentParser = equipmentParser;
+        this.specParser = specParser;
     }
 
     async searchCharacter(name: string): Promise<string> {
@@ -29,10 +33,13 @@ export class Requester {
 
         this.homePageParser.ensureIsPublic(characterSpecPage.data);
 
+        const spec = this.specParser.parse(characterSpecPage.data);
+        console.log(spec);
+
         const equipmentLink = this.homePageParser.getEquipmentPageLink(characterSpecPage.data);
         const petLink = this.homePageParser.getPetPageLink(characterSpecPage.data);
 
-        console.log({ characterLink, equipmentLink, petLink });
+        //console.log({ characterLink, equipmentLink, petLink });
 
         return characterLink;
     }

@@ -46,7 +46,7 @@ export interface Spec {
      */
     ignoreDef: number;
     /**
-     * 데미지
+     * @deprecated 데미지 (⚠ 아직 공식 홈페이지에 추가되지 않아서 사용불가)
      */
     dmg: number;
     /**
@@ -84,9 +84,9 @@ export interface Spec {
     /**
      * 어빌리티
      */
-    abilities: Record<Stat, number>;
+    abilities: Partial<Record<Stat, number>>;
     /**
      * 하이퍼스탯
      */
-    hypers: Record<Stat, number>;
+    hypers: Partial<Record<Stat, number>>;
 }
