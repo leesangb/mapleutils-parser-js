@@ -6,6 +6,16 @@ const CHARACTER_LINKS_SELECTOR = 'div.rank_table_wrap > table > tbody > tr > td.
 const EQUIPMENT_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nth-child(3) > a';
 const PET_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nth-child(10) > a';
 
+const BASE_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > div.weapon_wrap > ul > li a';
+const CASH_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div.cash_weapon_wrap > ul > li a';
+const SYMBOL_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab03_con_wrap > div.arcane_weapon_wrap > ul > li a';
+
+export interface EquipmentLinks {
+    base: string[];
+    cash: string[];
+    symbol: string[];
+}
+
 /**
  * 공식 홈페이지 html에서 링크 파싱
  */
@@ -39,7 +49,7 @@ export class HomePageParser {
      * 캐릭터 정보 페이지에서 장비 링크를 반환
      * @param characterLinkPageHtml 캐릭터 정보 페이지 html
      */
-    getEquipmentLink(characterLinkPageHtml: string): string | null {
+    getEquipmentPageLink(characterLinkPageHtml: string): string | null {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(EQUIPMENT_LINK_SELECTOR);
         return link
@@ -51,11 +61,28 @@ export class HomePageParser {
      * 캐릭터 정보 페이지에서 펫 링크를 반환
      * @param characterLinkPageHtml 캐릭터 정보 페이지 html
      */
-    getPetLink(characterLinkPageHtml: string): string | null {
+    getPetPageLink(characterLinkPageHtml: string): string | null {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(PET_LINK_SELECTOR);
         return link
             ? `${MAPLESTORY_HOME}${link.attrs['href']}`
             : null;
+    }
+
+    /**
+     * 장비 정보 페이지에서 착용중인 기본 아이템, 캐시 아이템, 아케인 심볼 링크들을 반환
+     * @param equipmentPageHtml 캐릭터 장비 정보 페이지 html
+     */
+    getEquipmentLinks(equipmentPageHtml: string): EquipmentLinks {
+        const node = HTMLParser.parse(equipmentPageHtml);
+        const baseLinks: NhpHTMLElement[] = node.querySelectorAll(BASE_EQUIPMENT_LINKS_SELECTOR);
+        const cashLinks: NhpHTMLElement[] = node.querySelectorAll(CASH_EQUIPMENT_LINKS_SELECTOR);
+        const symbolLinks: NhpHTMLElement[] = node.querySelectorAll(SYMBOL_EQUIPMENT_LINKS_SELECTOR);
+
+        return {
+            base: baseLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
+            cash: cashLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
+            symbol: symbolLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
+        };
     }
 }
