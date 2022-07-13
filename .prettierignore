@@ -1,0 +1,7 @@
+.idea
+build
+node_modules
+.gitignore
+*.json
+*.md
+.prettierrc
