@@ -2,9 +2,10 @@ import axios from 'axios';
 import { MAPLESTORY_RANKING_SEARCH } from '../constants/links';
 import { EquipmentParser } from '../parsers/equipment';
 import { GeneralInformationParser } from '../parsers/general';
-import { EquipmentLinks, HomePageParser } from '../parsers/homepage';
+import { HomePageParser } from '../parsers/homepage';
 import { SpecParser } from '../parsers/spec';
-import { Equipment } from '../types/Equipment';
+import { CashEquipment, Equipment, Equipments } from '../types/Equipment';
+import { Symbol } from '../types/Symbol';
 
 
 export class Requester {
@@ -50,7 +51,7 @@ export class Requester {
         return characterLink;
     }
 
-    async getEquipments(equipmentLink: string): Promise<EquipmentLinks> {
+    async getEquipments(equipmentLink: string): Promise<Equipments> {
         const equipmentPage = await axios.get<string>(equipmentLink);
         if (equipmentPage.status !== 200)
             throw '장비 패이지를 열기 오류';
@@ -58,12 +59,18 @@ export class Requester {
 
         const equipmentLinks = this.homePageParser.getEquipmentLinks(equipmentPage.data);
         const baseHtml: string[] = await this.getAllHtmls(equipmentLinks.base);
-        //const cash: string[] = await this.getAllHtmls(equipmentLinks.cash);
-        //const symbols: string[] = await this.getAllHtmls(equipmentLinks.symbol);
+        const cashHtml: string[] = await this.getAllHtmls(equipmentLinks.cash);
+        const symbolHtml: string[] = await this.getAllHtmls(equipmentLinks.symbol);
 
-        const base: Equipment[] = baseHtml.map(html => this.equipmentParser.parse(html)).filter(e => !!e) as Equipment[];
-        console.log(base);
-        return equipmentLinks;
+        const base: Equipment[] = baseHtml.map((html) => this.equipmentParser.parseBase(html)).filter(e => !!e) as Equipment[];
+        const cash: CashEquipment[] = cashHtml.map((html) => this.equipmentParser.parseCash(html)).filter(e => !!e) as CashEquipment[];
+        const symbol: Symbol[] = symbolHtml.map((html) => this.equipmentParser.parseSymbol(html)).filter(e => !!e) as Symbol[];
+
+        return {
+            base,
+            cash,
+            symbol,
+        };
     }
 
     private async getAllHtmls(links: string[]): Promise<string[]> {

@@ -1,5 +1,6 @@
 import { Potential, PotentialGrade } from './Potential';
 import { Stat } from './Stat';
+import { Symbol } from './Symbol';
 
 export interface EquipmentBase {
     /**
@@ -55,5 +56,11 @@ export interface Equipment extends EquipmentBase {
     soul?: [Stat, number];
 }
 
-export interface CashEquipment extends EquipmentBase {
+export interface CashEquipment extends Omit<EquipmentBase, 'scroll' | 'upgrade'> {
+}
+
+export interface Equipments {
+    base: Equipment[];
+    cash: CashEquipment[];
+    symbol: Symbol[];
 }

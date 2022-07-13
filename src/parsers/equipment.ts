@@ -1,7 +1,8 @@
 import { HTMLElement } from 'node-html-parser';
-import { Equipment } from '../types/Equipment';
+import { CashEquipment, Equipment } from '../types/Equipment';
 import { Potential, POTENTIAL_GRADE_MAPPING, PotentialGrade } from '../types/Potential';
 import { Stat, STAT_MAPPING } from '../types/Stat';
+import { Symbol } from '../types/Symbol';
 
 const HTMLParser = require('node-html-parser');
 
@@ -13,13 +14,14 @@ const ITEM_GRADE_SELECTOR = 'div.item_title > div.item_memo > div.item_memo_sel'
 
 type EquipmentStat = Record<'base' | 'scroll' | 'flame', Partial<Record<Stat, number>>>;
 type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: [Stat, number] }
+type SymbolOption = Record<'level' | 'experience' | 'requiredExperience', number>;
 
 export class EquipmentParser {
     /**
      * 장비 정보 html에서 장비 효과를 파싱하여 반환
      * @param equipmentHtml 장비 html
      */
-    parse(equipmentHtml: string): Equipment | null {
+    parseBase(equipmentHtml: string): Equipment {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
         const { name, upgrade, star } = this.parseName(node);
@@ -41,6 +43,56 @@ export class EquipmentParser {
             additional,
             flame,
             soul,
+        };
+    }
+
+    /**
+     * 장비 정보 html에서 캐시 장비 효과를 파싱하여 반환
+     * @param equipmentHtml 장비 html
+     */
+    parseCash(equipmentHtml: string): CashEquipment {
+        const node: HTMLElement = HTMLParser.parse(equipmentHtml);
+
+        const { name } = this.parseName(node);
+        const imageUrl = this.parseImage(node);
+        const category = this.parseCategory(node);
+        const { base } = this.parseOptions(node);
+
+        return {
+            name,
+            imageUrl,
+            category,
+            base,
+        };
+    }
+
+    /**
+     * 장비 정보 html에서 심볼 장비 효과를 파싱하여 반환
+     * @param equipmentHtml 장비 html
+     */
+    parseSymbol(equipmentHtml: string): Symbol {
+        const node: HTMLElement = HTMLParser.parse(equipmentHtml);
+
+        const { name } = this.parseName(node);
+        const { scroll } = this.parseOptions(node);
+        const rest = this.parseSymbolOptions(node);
+
+        return {
+            name: name,
+            stat: scroll,
+            ...rest,
+        };
+    }
+
+    private parseSymbolOptions(node: HTMLElement): SymbolOption {
+        const [levelNode, experienceNode]: HTMLElement[] = node.querySelectorAll(ITEM_OPTIONS_SELECTOR);
+        const level = levelNode.querySelector('div.point_td')?.text || '0';
+        const experiences = experienceNode.querySelector('div.point_td')?.text;
+        const [experience, requiredExperience] = experiences?.split('/') || ['0', '0'];
+        return {
+            level: parseInt(level),
+            experience: parseInt(experience),
+            requiredExperience: parseInt(requiredExperience),
         };
     }
 

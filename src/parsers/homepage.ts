@@ -80,9 +80,9 @@ export class HomePageParser {
         const symbolLinks: NhpHTMLElement[] = node.querySelectorAll(SYMBOL_EQUIPMENT_LINKS_SELECTOR);
 
         return {
-            base: baseLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
-            cash: cashLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
-            symbol: symbolLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`),
+            base: baseLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
+            cash: cashLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
+            symbol: symbolLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
         };
     }
 }
