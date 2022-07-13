@@ -1,6 +1,6 @@
 import { HTMLElement } from 'node-html-parser';
 import { Equipment } from '../types/Equipment';
-import { Potential } from '../types/Potential';
+import { Potential, POTENTIAL_GRADE_MAPPING, PotentialGrade } from '../types/Potential';
 import { Stat, STAT_MAPPING } from '../types/Stat';
 
 const HTMLParser = require('node-html-parser');
@@ -9,6 +9,7 @@ const ITEM_NAME_SELECTOR = 'div.item_memo_title > h1';
 const ITEM_IMAGE_SELECTOR = 'div.item_img > img';
 const ITEM_CATEGORY_SELECTOR = 'div.item_ability > div:nth-child(3) > span > em';
 const ITEM_OPTIONS_SELECTOR = 'div.stet_info > ul > li';
+const ITEM_GRADE_SELECTOR = 'div.item_title > div.item_memo > div.item_memo_sel';
 
 type EquipmentStat = Record<'base' | 'scroll' | 'flame', Partial<Record<Stat, number>>>;
 type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: [Stat, number] }
@@ -21,6 +22,7 @@ export class EquipmentParser {
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
         const { base, scroll, flame, potential, additional, soul } = this.parseOptions(node);
+        const grade = this.parseGrade(node);
 
         return {
             name,
@@ -29,12 +31,12 @@ export class EquipmentParser {
             upgrade,
             base,
             scroll,
-            //     grade,
+            grade,
             star,
-            //     potential,
-            //     additional,
+            potential,
+            additional,
             flame,
-            //     soul,
+            soul,
         };
     }
 
@@ -47,18 +49,19 @@ export class EquipmentParser {
             flame: {},
         };
         for (const optionNode of optionNodes) {
-            const name = optionNode.querySelector('div.stet_th')?.text.trim();
+            const nameNode = optionNode.querySelector('div.stet_th')!;
+            const name = nameNode.text.trim();
             if (!name || name === '공격속도' || name === '기타')
                 continue;
 
             const statNode = optionNode.querySelector('div.point_td')!;
 
             if (name.startsWith('잠재')) {
-                option.potential = this.parsePotential(statNode);
+                option.potential = this.parsePotential(nameNode, statNode);
                 continue;
             }
             if (name.startsWith('에디')) {
-                option.additional = this.parsePotential(statNode);
+                option.additional = this.parsePotential(nameNode, statNode);
                 continue;
             }
             if (name.startsWith('소울')) {
@@ -92,6 +95,13 @@ export class EquipmentParser {
         return option;
     }
 
+    private parseGrade(node: HTMLElement): PotentialGrade {
+        const gradeText = node.querySelector(ITEM_GRADE_SELECTOR)?.text.trim();
+        return gradeText
+            ? POTENTIAL_GRADE_MAPPING[gradeText] || 'nothing'
+            : 'nothing';
+    }
+
     private parseStat(name: string, node: HTMLElement): Record<'base' | 'scroll' | 'flame', [Stat, number]> {
         const stat = STAT_MAPPING[name];
         const line = node.innerText.trim();
@@ -116,14 +126,46 @@ export class EquipmentParser {
         };
     }
 
-    private parseSoul(node: HTMLElement): [Stat, number] {
-        return ['str', 0];
+    private parseSoul(node: HTMLElement): [Stat, number] | undefined {
+        const textNode = node.childNodes[2];
+        if (!textNode)
+            return;
+
+        const option = textNode.text.split(':').map(s => s.trim());
+        if (option.length !== 2)
+            return;
+        const [name, value] = option;
+        const stat = STAT_MAPPING[name];
+        if (!stat)
+            return;
+
+        return [stat, parseInt(value)];
     }
 
-    private parsePotential(node: HTMLElement): Potential {
+    private parsePotential(nameNode: HTMLElement, valueNode: HTMLElement): Potential | undefined {
+        const gradeName = nameNode.querySelector('font')?.text;
+        if (!gradeName)
+            return;
+
+
+        const effects = valueNode.childNodes
+            .filter((_, i) => i % 2 === 0)
+            .map(n => {
+                const [name, value] = n.text.split(':');
+                const statName = name.trim() + (value?.includes('%') ? '%' : '');
+
+                const stat = STAT_MAPPING[statName];
+                if (!stat) {
+                    return null;
+                }
+
+                return [stat, parseInt(value)];
+            })
+            .filter(e => e) as [Stat, number][];
+
         return {
-            grade: 'nothing',
-            effects: [],
+            grade: POTENTIAL_GRADE_MAPPING[gradeName] || 'nothing',
+            effects,
         };
     }
 
@@ -139,29 +181,28 @@ export class EquipmentParser {
     }
 
     private parseName(node: HTMLElement): { name: string, upgrade: number, star: number } {
-        const e = node.querySelector(ITEM_NAME_SELECTOR);
-        const text = e?.innerText || '';
+        const h1 = node.querySelector(ITEM_NAME_SELECTOR);
+        if (!h1)
+            throw '올바른 html 노드가 아닙니다';
 
-        let name = text;
-        let star = '0';
-        let upgrade = '0';
-
-        const starForceIndex = text.lastIndexOf('성 강화');
-        if (starForceIndex > 0) {
-            name = text.substring(0, starForceIndex - 2);
-            star = text.substring(starForceIndex - 2, starForceIndex);
+        const hasSoulWeapon = h1.childNodes.length > 3;
+        if (hasSoulWeapon) {
+            // remove blank
+            h1.childNodes.shift();
+            // remove soul weapon name
+            h1.childNodes.shift();
+            // remove blank
+            h1.childNodes.shift();
         }
-
-        const upgradeIndex = text.lastIndexOf('(+');
-        if (upgradeIndex > 0) {
-            name = text.substring(0, upgradeIndex - 1);
-            upgrade = text.substring(upgradeIndex + 2, text.lastIndexOf(')'));
-        }
+        const [nameNode, starNode] = h1.childNodes;
+        const [name, upgrade] = nameNode.text
+            .replaceAll('&nbsp;', '')
+            .split('(+');
 
         return {
-            name: name.replaceAll('&nbsp;', '').trim(),
-            upgrade: parseInt(upgrade.trim()),
-            star: parseInt(star.trim()),
+            name: name.trim(),
+            upgrade: parseInt(upgrade?.trim() || '0'),
+            star: parseInt(starNode?.text.trim() || '0'),
         };
     }
 }

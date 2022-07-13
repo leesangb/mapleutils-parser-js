@@ -44,7 +44,7 @@ export class Requester {
         this.homePageParser.ensureIsPublic(equipmentPage.data);
 
         const equipmentLinks = this.homePageParser.getEquipmentLinks(equipmentPage.data);
-        const baseHtml: string[] = await this.getAllHtmls(equipmentLinks.base.slice(4, 5));
+        const baseHtml: string[] = await this.getAllHtmls(equipmentLinks.base);
         //const cash: string[] = await this.getAllHtmls(equipmentLinks.cash);
         //const symbols: string[] = await this.getAllHtmls(equipmentLinks.symbol);
 
