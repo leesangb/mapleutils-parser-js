@@ -11,11 +11,11 @@ export class SpecParser {
      * 캐릭터 정보 페이지 html에서 스펙을 파싱하여 반환
      * @param specPageHtml
      */
-    parse(specPageHtml: string): Spec | null {
+    parse(specPageHtml: string): Spec {
         const node: HTMLElement = HTMLParser.parse(specPageHtml);
         const data = node.querySelectorAll(SPEC_TABLE_DATA_SELECTOR);
         if (!data || data.length !== 20)
-            return null;
+            throw '올바른 캐릭터 정보 페이지가 아닙니다';
 
         const [
             statAtks,
@@ -45,7 +45,7 @@ export class SpecParser {
                     .filter((_, i) => i % 2 === 0)
                     .map(c => c.text)
                     .join('\n')
-                : n.innerText.replaceAll(',', '').trim();
+                : n.text.replaceAll(',', '').trim();
         });
         const [statAtkLow, statAtkHigh] = statAtks.split(' ~ ');
 
