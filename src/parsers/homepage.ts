@@ -26,13 +26,13 @@ export class HomePageParser {
      * @param name 검색할 캐릭터 닉네임 (영어가 포함된 경우 대소문자를 구분하지 않음)
      * @param rankingPageHtml 열려있는 랭킹 페이지 html
      */
-    getCharacterLink(name: string, rankingPageHtml: string): string | null {
+    getCharacterLink(name: string, rankingPageHtml: string): string {
         const node = HTMLParser.parse(rankingPageHtml);
         const links: NhpHTMLElement[] = node.querySelectorAll(CHARACTER_LINKS_SELECTOR);
         const link = links.find((linkNode: NhpHTMLElement) => linkNode.innerText.toLowerCase() === name.toLowerCase());
-        return link
-            ? `${MAPLESTORY_HOME}${link.attrs['href']}`
-            : null;
+        if (!link)
+            throw '올바른 랭킹 링크가 아니거나 캐릭터를 찾을 수 없습니다';
+        return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
     /**
@@ -50,24 +50,24 @@ export class HomePageParser {
      * 캐릭터 정보 페이지에서 장비 링크를 반환
      * @param characterLinkPageHtml 캐릭터 정보 페이지 html
      */
-    getEquipmentPageLink(characterLinkPageHtml: string): string | null {
+    getEquipmentPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(EQUIPMENT_LINK_SELECTOR);
-        return link
-            ? `${MAPLESTORY_HOME}${link.attrs['href']}`
-            : null;
+        if (!link)
+            throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
     /**
      * 캐릭터 정보 페이지에서 펫 링크를 반환
      * @param characterLinkPageHtml 캐릭터 정보 페이지 html
      */
-    getPetPageLink(characterLinkPageHtml: string): string | null {
+    getPetPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(PET_LINK_SELECTOR);
-        return link
-            ? `${MAPLESTORY_HOME}${link.attrs['href']}`
-            : null;
+        if (!link)
+            throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
     /**

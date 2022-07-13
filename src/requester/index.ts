@@ -4,11 +4,12 @@ import { EquipmentParser } from '../parsers/equipment';
 import { GeneralInformationParser } from '../parsers/general';
 import { HomePageParser } from '../parsers/homepage';
 import { SpecParser } from '../parsers/spec';
+import { Character } from '../types/Character';
 import { CashEquipment, Equipment, Equipments } from '../types/Equipment';
 import { Symbol } from '../types/Symbol';
 
 
-export class Requester {
+export class MapleUtilsParser {
     private homePageParser: HomePageParser;
     private equipmentParser: EquipmentParser;
     private specParser: SpecParser;
@@ -24,7 +25,15 @@ export class Requester {
         this.generalInformationParser = generalInformationParser;
     }
 
-    async searchCharacter(name: string): Promise<string> {
+    static new(): MapleUtilsParser {
+        const homePage = new HomePageParser();
+        const equipment = new EquipmentParser();
+        const spec = new SpecParser();
+        const generalInformation = new GeneralInformationParser();
+        return new MapleUtilsParser(homePage, equipment, spec, generalInformation);
+    }
+
+    async getCharacter(name: string): Promise<Character> {
         const rankingSearch = await axios.get<string>(`${MAPLESTORY_RANKING_SEARCH}?c=${encodeURI(name)}`);
         if (rankingSearch.status !== 200)
             throw `'${name}' 공식 홈페이지 랭킹 검색 오류`;
@@ -41,14 +50,22 @@ export class Requester {
 
         const spec = this.specParser.parse(characterSpecPage.data);
         const generalInformation = this.generalInformationParser.parse(characterSpecPage.data);
-        console.log(spec, generalInformation);
 
         const equipmentLink = this.homePageParser.getEquipmentPageLink(characterSpecPage.data);
         const petLink = this.homePageParser.getPetPageLink(characterSpecPage.data);
 
-        //console.log({ characterLink, equipmentLink, petLink });
+        const equipments = await this.getEquipments(equipmentLink);
+        const petEquipments = await this.getPetEquipments(petLink);
 
-        return characterLink;
+        return {
+            ...generalInformation,
+            spec,
+            equipments: equipments.base,
+            arcanes: equipments.symbol,
+            cashEquipments: equipments.cash,
+            authentics: [],
+            petEquipments,
+        };
     }
 
     async getEquipments(equipmentLink: string): Promise<Equipments> {
