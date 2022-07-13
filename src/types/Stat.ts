@@ -82,6 +82,7 @@ export const STAT_MAPPING: Record<string, Stat> = {
     ['몬스터 방어력 무시%']: 'ignoreDef',
     ['몬스터 방어율 무시']: 'ignoreDef',
     ['몬스터 방어율 무시%']: 'ignoreDef',
+    ['보스 몬스터공격 시 데미지']: 'bossDmg',
     ['보스 몬스터 공격 시 데미지']: 'bossDmg',
     ['보스 몬스터 공격 시 데미지%']: 'bossDmg',
     ['데미지']: 'dmg',
