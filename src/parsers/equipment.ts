@@ -53,15 +53,17 @@ export class EquipmentParser {
     parseCash(equipmentHtml: string): CashEquipment {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
-        const { name } = this.parseName(node);
+        const { name, upgrade } = this.parseName(node);
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
-        const { base } = this.parseOptions(node);
+        const { base, scroll, flame } = this.parseOptions(node);
 
         return {
             name,
+            upgrade,
             imageUrl,
             category,
+            scroll,
             base,
         };
     }

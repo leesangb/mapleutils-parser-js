@@ -56,7 +56,7 @@ export interface Equipment extends EquipmentBase {
     soul?: [Stat, number];
 }
 
-export interface CashEquipment extends Omit<EquipmentBase, 'scroll' | 'upgrade'> {
+export interface CashEquipment extends EquipmentBase {
 }
 
 export interface Equipments {

@@ -54,7 +54,7 @@ export class Requester {
     async getEquipments(equipmentLink: string): Promise<Equipments> {
         const equipmentPage = await axios.get<string>(equipmentLink);
         if (equipmentPage.status !== 200)
-            throw '장비 패이지를 열기 오류';
+            throw '장비 페이지 열기 오류';
         this.homePageParser.ensureIsPublic(equipmentPage.data);
 
         const equipmentLinks = this.homePageParser.getEquipmentLinks(equipmentPage.data);
@@ -71,6 +71,16 @@ export class Requester {
             cash,
             symbol,
         };
+    }
+
+    async getPetEquipments(petEquipmentLink: string): Promise<CashEquipment[]> {
+        const equipmentPage = await axios.get<string>(petEquipmentLink);
+        if (equipmentPage.status !== 200)
+            throw '펫장비 페이지 열기 오류';
+
+        const equipmentLinks: string[] = this.homePageParser.getPetEquipmentLinks(equipmentPage.data);
+        const equipmentHtml = await this.getAllHtmls(equipmentLinks);
+        return equipmentHtml.map(html => this.equipmentParser.parseCash(html)).filter(e => !!e) as CashEquipment[];
     }
 
     private async getAllHtmls(links: string[]): Promise<string[]> {

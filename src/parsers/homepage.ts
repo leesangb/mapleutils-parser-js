@@ -9,6 +9,7 @@ const PET_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nt
 const BASE_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > div.weapon_wrap > ul > li a';
 const CASH_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div.cash_weapon_wrap > ul > li a';
 const SYMBOL_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab03_con_wrap > div.arcane_weapon_wrap > ul > li a';
+const PET_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div > ul > li > h2 > span > a';
 
 export interface EquipmentLinks {
     base: string[];
@@ -84,5 +85,15 @@ export class HomePageParser {
             cash: cashLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
             symbol: symbolLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
         };
+    }
+
+    /**
+     * 펫 장비 정보 페이지에서 착용중인 펫장비 아이템 링크들을 반환
+     * @param petEquipmentPageHtml 펫 정보 페이지 html
+     */
+    getPetEquipmentLinks(petEquipmentPageHtml: string): string[] {
+        const node = HTMLParser.parse(petEquipmentPageHtml);
+        const links: NhpHTMLElement[] = node.querySelectorAll(PET_EQUIPMENT_LINKS_SELECTOR);
+        return links.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME);
     }
 }
