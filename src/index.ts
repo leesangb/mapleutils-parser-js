@@ -1,3 +1,1 @@
-import { MapleUtilsParser } from './requester';
-
-export default MapleUtilsParser;
+export { MapleUtilsParser } from './requester';
