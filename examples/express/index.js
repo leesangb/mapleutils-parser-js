@@ -4,7 +4,13 @@ const app = express();
 const port = 3000;
 
 app.get('/character/:name', async (req, res) => {
-    const character = await MapleUtilsParser.new().getCharacter(req.params.name);
+    const character = await MapleUtilsParser.new().getCharacter({
+        name: req.params.name,
+        cash: true,
+        pet: true,
+        equip: true,
+        symbol: true,
+    });
     res.send(JSON.stringify(character, undefined, 4));
 });
 

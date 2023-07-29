@@ -11,7 +11,13 @@
 import { MapleUtilsParser } from 'mapleutils-parser-js';
 
 const parser = MapleUtilsParser.new();
-parser.getCharacter('상빈')
+parser.getCharacter({
+    name: '상빈',
+    cash: true,
+    pet: true,
+    equip: true,
+    symbol: true
+})
     .then((character) => console.log(character));
 ```
 
