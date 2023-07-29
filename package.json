@@ -1,20 +1,13 @@
 {
   "name": "mapleutils-parser-js",
-  "version": "1.0.0",
-  "description": "메이플스토리 공식 홈페이지 파싱 라이브러리",
-  "main": "lib/index.js",
-  "module": "lib/index.esm.js",
-  "types": "lib/index.d.ts",
-  "files": [
-    "src",
-    "lib"
-  ],
+  "version": "0.0.1",
+  "description": "Maplestory unofficial parsing library",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "npm run build && node lib/index.js",
-    "build": "rm -rf lib && rollup -c",
+    "build": "tsup src/index.ts --format cjs,esm --dts --minify --legacy-output --clean --sourcemap --out-dir dist",
     "test": "jest --passWithNoTests",
-    "release": "npm run build && npm version",
-    "preversion": "npm run test && npm run build",
     "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
   },
   "author": "Sangbin Lee <leesangbin@outlook.com>",
@@ -24,17 +17,12 @@
   },
   "homepage": "https://github.com/leesangb/mapleutils-parser-js#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.1",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-typescript": "^8.3.3",
+    "@changesets/cli": "^2.26.2",
     "@types/node": "^18.0.3",
-    "rollup": "^2.76.0",
-    "tslib": "^2.4.0",
-    "typescript": "^4.7.4"
+    "tsup": "^7.1.0",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "node-html-parser": "^5.3.3"
+    "node-html-parser": "^6.1.5"
   }
 }

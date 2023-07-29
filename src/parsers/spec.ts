@@ -1,8 +1,6 @@
 import { Spec } from '../types/Spec';
-import { HTMLElement } from 'node-html-parser';
-import { Stat } from '../types/Stat';
-
-const HTMLParser = require('node-html-parser');
+import HTMLParser, { HTMLElement } from 'node-html-parser';
+import { Stat, Stats } from '../types/Stat';
 
 const SPEC_TABLE_DATA_SELECTOR = 'div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > table:nth-child(4) > tbody > tr > td';
 
@@ -58,7 +56,7 @@ export class SpecParser {
             dex: parseInt(dex),
             int: parseInt(int),
             luk: parseInt(luk),
-            dmg: 0, // not provided
+            // dmg: 0, // not provided
             critDmg: parseInt(critDmg),
             bossDmg: parseInt(bossDmg),
             ignoreDef: parseInt(ignoreDef),
@@ -69,14 +67,14 @@ export class SpecParser {
             jump: parseInt(jump),
             starForce: parseInt(starForce),
             arcaneForce: parseInt(arcaneForce),
-            authenticForce: 0, // not provided
+            // authenticForce: 0, // not provided
             hypers: this.parseHypers(hyper),
             abilities: this.parseAbilities(ability),
         };
     }
 
-    private parseHypers(hyper: string): Partial<Record<Stat, number>> {
-        const hypers: Partial<Record<Stat, number>> = {};
+    private parseHypers(hyper: string): Stats {
+        const hypers: Stats = {};
         hyper.split('\n').forEach(line => {
             const value = parseInt(line.replace(/[^\d]/g, ''));
             if (line.startsWith('힘')) {
@@ -106,13 +104,15 @@ export class SpecParser {
                 hypers.ignoreDef = value;
             } else if (line.startsWith('아케인')) {
                 hypers.arcane = value;
+            } else if (line.startsWith('획득 경험치')) {
+                hypers.exp = value / 10;
             }
         });
         return hypers;
     }
 
-    private parseAbilities(ability: string): Partial<Record<Stat, number>> {
-        const abilities: Partial<Record<Stat, number>> = {};
+    private parseAbilities(ability: string): Stats {
+        const abilities: Stats = {};
         ability.split('\n').forEach(stat => {
             const value = parseInt(stat.replace(/[^\d]/g, ''));
             if (stat.includes('패시브')) {
@@ -145,6 +145,10 @@ export class SpecParser {
                 abilities.statusDmg = value;
             } else if (stat.includes('버프')) {
                 abilities.buff = value;
+            } else if (stat.includes('메소')) {
+                abilities.meso = value;
+            } else if (stat.includes('아이템')) {
+                abilities.drop = value;
             } else {
                 for (const defaultStat of ['str', 'dex', 'int', 'luk'] as Stat[]) {
                     stat.split(',')

@@ -1,10 +1,8 @@
-import { HTMLElement } from 'node-html-parser';
+import HTMLParser, { HTMLElement } from 'node-html-parser';
 import { CashEquipment, Equipment } from '../types/Equipment';
 import { Potential, POTENTIAL_GRADE_MAPPING, PotentialGrade } from '../types/Potential';
-import { Stat, STAT_MAPPING } from '../types/Stat';
+import { Stat, STAT_MAPPING, Stats } from '../types/Stat';
 import { Symbol } from '../types/Symbol';
-
-const HTMLParser = require('node-html-parser');
 
 const ITEM_NAME_SELECTOR = 'div.item_memo_title > h1';
 const ITEM_IMAGE_SELECTOR = 'div.item_img > img';
@@ -12,8 +10,8 @@ const ITEM_CATEGORY_SELECTOR = 'div.item_ability > div:nth-child(3) > span > em'
 const ITEM_OPTIONS_SELECTOR = 'div.stet_info > ul > li';
 const ITEM_GRADE_SELECTOR = 'div.item_title > div.item_memo > div.item_memo_sel';
 
-type EquipmentStat = Record<'base' | 'scroll' | 'flame', Partial<Record<Stat, number>>>;
-type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: [Stat, number] }
+type EquipmentStat = Record<'base' | 'scroll' | 'flame', Stats>;
+type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: Stats, scissors?: number };
 type SymbolOption = Record<'level' | 'experience' | 'requiredExperience', number>;
 
 export class EquipmentParser {
@@ -24,10 +22,10 @@ export class EquipmentParser {
     parseBase(equipmentHtml: string): Equipment {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
-        const { name, upgrade, star } = this.parseName(node);
+        const { name, upgrade, star } = this.parseName(node, equipmentHtml);
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
-        const { base, scroll, flame, potential, additional, soul } = this.parseOptions(node);
+        const { base, scroll, flame, potential, additional, soul, scissors } = this.parseOptions(node);
         const grade = this.parseGrade(node);
 
         return {
@@ -43,6 +41,7 @@ export class EquipmentParser {
             additional,
             flame,
             soul,
+            scissors,
         };
     }
 
@@ -53,10 +52,10 @@ export class EquipmentParser {
     parseCash(equipmentHtml: string): CashEquipment {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
-        const { name, upgrade } = this.parseName(node);
+        const { name, upgrade } = this.parseName(node, equipmentHtml);
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
-        const { base, scroll, flame } = this.parseOptions(node);
+        const { base, scroll } = this.parseOptions(node);
 
         return {
             name,
@@ -75,13 +74,13 @@ export class EquipmentParser {
     parseSymbol(equipmentHtml: string): Symbol {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
-        const { name } = this.parseName(node);
+        const { name } = this.parseName(node, equipmentHtml);
         const { scroll } = this.parseOptions(node);
         const rest = this.parseSymbolOptions(node);
 
         return {
             name: name,
-            stat: scroll,
+            stat: scroll!,
             ...rest,
         };
     }
@@ -126,13 +125,15 @@ export class EquipmentParser {
                 option.soul = this.parseSoul(statNode);
                 continue;
             }
+            if (name.startsWith('가위 사용')) {
+                option.scissors = parseInt(statNode.text.trim());
+                continue;
+            }
             if (name.startsWith('Max') && statNode.text.includes('%')) {
                 const stat: Stat = name === 'MaxHP'
                     ? 'hpP'
                     : 'mpP';
                 option.base[stat] = parseInt(statNode.text.trim());
-                option.flame[stat] = 0;
-                option.scroll[stat] = 0;
                 continue;
             }
             if (name.startsWith('올') && statNode.text.includes('%')) {
@@ -160,15 +161,15 @@ export class EquipmentParser {
             : 'nothing';
     }
 
-    private parseStat(name: string, node: HTMLElement): Record<'base' | 'scroll' | 'flame', [Stat, number]> {
+    private parseStat(name: string, node: HTMLElement): Record<'base' | 'scroll' | 'flame', [Stat, number | undefined]> {
         const stat = STAT_MAPPING[name];
         const line = node.innerText.trim();
         const parenthesisIndex = line.indexOf('(');
         if (parenthesisIndex < 0) {
             return {
                 base: [stat, parseInt(line)],
-                scroll: [stat, 0],
-                flame: [stat, 0],
+                scroll: [stat, undefined],
+                flame: [stat, undefined],
             };
         }
 
@@ -178,13 +179,13 @@ export class EquipmentParser {
             .map(v => parseInt(v.trim()));
 
         return {
-            base: [stat, base || 0],
-            scroll: [stat, scroll || 0],
-            flame: [stat, flame || 0],
+            base: [stat, base || undefined],
+            scroll: [stat, scroll || undefined],
+            flame: [stat, flame || undefined],
         };
     }
 
-    private parseSoul(node: HTMLElement): [Stat, number] | undefined {
+    private parseSoul(node: HTMLElement): Stats | undefined {
         const textNode = node.childNodes[2];
         if (!textNode)
             return;
@@ -197,14 +198,13 @@ export class EquipmentParser {
         if (!stat)
             return;
 
-        return [stat, parseInt(value)];
+        return { [stat]: parseInt(value) };
     }
 
     private parsePotential(nameNode: HTMLElement, valueNode: HTMLElement): Potential | undefined {
         const gradeName = nameNode.querySelector('font')?.text;
         if (!gradeName)
             return;
-
 
         const effects = valueNode.childNodes
             .filter((_, i) => i % 2 === 0)
@@ -217,16 +217,15 @@ export class EquipmentParser {
                     return null;
                 }
 
-                return [stat, parseInt(value)];
+                return { [stat]: parseInt(value) };
             })
-            .filter(e => e) as [Stat, number][];
+            .filter(e => e) as Record<Stat, number>[];
 
         return {
             grade: POTENTIAL_GRADE_MAPPING[gradeName] || 'nothing',
             effects,
         };
     }
-
 
     private parseCategory(node: HTMLElement): string {
         const categoryNode = node.querySelector(ITEM_CATEGORY_SELECTOR);
@@ -238,10 +237,12 @@ export class EquipmentParser {
         return imageNode?.attrs['src'] || '';
     }
 
-    private parseName(node: HTMLElement): { name: string, upgrade: number, star: number } {
+    private parseName(node: HTMLElement, html: string): { name: string, upgrade: number, star: number } {
         const h1 = node.querySelector(ITEM_NAME_SELECTOR);
-        if (!h1)
+        if (!h1) {
+            console.log(html);
             throw '올바른 html 노드가 아닙니다';
+        }
 
         const hasSoulWeapon = h1.childNodes.length > 3;
         if (hasSoulWeapon) {

@@ -1,7 +1,5 @@
-import { HTMLElement } from 'node-html-parser';
+import HTMLParser, { HTMLElement } from 'node-html-parser';
 import { GeneralInformation, Traits } from '../types/GeneralInformation';
-
-const HTMLParser = require('node-html-parser');
 
 const CHARACTER_TABLE_DATA_SELECTOR = 'div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > table:nth-child(2) > tbody > tr > td';
 const CHARACTER_NAME_SELECTOR = 'div.char_info_top > div.char_name > span';
@@ -19,8 +17,8 @@ export class GeneralInformationParser {
         const [
             world,
             job,
-            // popularity,
-            // guild,
+            popularity,
+            guild,
             // meso,
             // maplePoint,
         ] = data.map(n => n.text.replaceAll(',', '').trim());
@@ -28,6 +26,7 @@ export class GeneralInformationParser {
         return {
             name: this.parseName(node),
             world,
+            guild,
             job: job.split('/')[1].trim(),
             level: this.parseLevel(node),
             imageUrl: this.parseImageUrl(node),
@@ -56,7 +55,6 @@ export class GeneralInformationParser {
             throw '캐릭터 이미지를 찾을 수 없습니다';
         return imageUrl;
     }
-
 
     private parseTraits(node: HTMLElement): Traits {
         const traitNodes = node.querySelectorAll(CHARACTER_TRAITS_SELECTOR);

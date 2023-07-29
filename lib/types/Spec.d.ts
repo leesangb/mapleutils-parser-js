@@ -1,5 +1,4 @@
-import { Stats } from './Stat';
-
+import { Stat } from './Stat';
 export interface Spec {
     /**
      * 앞 스공
@@ -45,10 +44,10 @@ export interface Spec {
      * 방어율 무시
      */
     ignoreDef: number;
-    // /**
-    //  * @deprecated 데미지 (⚠ 아직 공식 홈페이지에 추가되지 않아서 사용불가)
-    //  */
-    // dmg: number;
+    /**
+     * @deprecated 데미지 (⚠ 아직 공식 홈페이지에 추가되지 않아서 사용불가)
+     */
+    dmg: number;
     /**
      * 상태이상 내성
      */
@@ -77,16 +76,16 @@ export interface Spec {
      * 아케인포스
      */
     arcaneForce: number;
-    // /**
-    //  * @deprecated 어센틱포스 (⚠ 아직 공식 홈페이지에 추가되지 않아서 사용불가)
-    //  */
-    // authenticForce: number;
+    /**
+     * @deprecated 어센틱포스 (⚠ 아직 공식 홈페이지에 추가되지 않아서 사용불가)
+     */
+    authenticForce: number;
     /**
      * 어빌리티
      */
-    abilities: Stats;
+    abilities: Partial<Record<Stat, number>>;
     /**
      * 하이퍼스탯
      */
-    hypers: Stats;
+    hypers: Partial<Record<Stat, number>>;
 }

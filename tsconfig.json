@@ -1,36 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "rootDir": "./src",
-    "outDir": "./lib",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "declaration": true,
-    "declarationDir": "./",
-    "allowJs": true,
-    "skipLibCheck": true,
+    "target": "es2016",
+    /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+    "module": "commonjs",
+    /* Specify what module code is generated. */
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
+    /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": false,
+    /* Ensure that casing is correct in imports. */
+    "strict": true,
+    /* Enable all strict type-checking options. */
+    "skipLibCheck": true,
+    /* Skip type checking all .d.ts files. */
     "noEmit": true
-  },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib",
-  ],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": true
+    /* Disable emitting files from a compilation. */
   }
 }

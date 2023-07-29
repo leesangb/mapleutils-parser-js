@@ -1,5 +1,4 @@
-import { Stats } from './Stat';
-
+import { Stat } from './Stat';
 export interface Symbol {
     /**
      * 심볼 이름
@@ -8,7 +7,7 @@ export interface Symbol {
     /**
      * 스탯 목록
      */
-    stat: Stats;
+    stat: Partial<Record<Stat, number>>;
     /**
      * 레벨
      */

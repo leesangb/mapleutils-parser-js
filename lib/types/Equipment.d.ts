@@ -1,7 +1,6 @@
 import { Potential, PotentialGrade } from './Potential';
-import { Stats } from './Stat';
+import { Stat } from './Stat';
 import { Symbol } from './Symbol';
-
 export interface EquipmentBase {
     /**
      * 이름
@@ -22,17 +21,12 @@ export interface EquipmentBase {
     /**
      * 기본 스탯
      */
-    base: Stats;
+    base: Partial<Record<Stat, number>>;
     /**
      * 작 스탯
      */
-    scroll: Stats;
-    /**
-     * 가위 사용 가능 횟수
-     */
-    scissors?: number;
+    scroll: Partial<Record<Stat, number>>;
 }
-
 export interface Equipment extends EquipmentBase {
     /**
      * 총 등급
@@ -41,7 +35,7 @@ export interface Equipment extends EquipmentBase {
     /**
      * 스타포스
      */
-    star?: number;
+    star: number;
     /**
      * 잠재능력
      */
@@ -53,18 +47,16 @@ export interface Equipment extends EquipmentBase {
     /**
      * 추가옵션
      */
-    flame: Stats;
+    flame: Partial<Record<Stat, number>>;
     /**
      * 소울
      */
-    soul?: Stats;
+    soul?: [Stat, number];
 }
-
 export interface CashEquipment extends EquipmentBase {
 }
-
 export interface Equipments {
-    base?: Equipment[];
-    cash?: CashEquipment[];
-    symbol?: Symbol[];
+    base: Equipment[];
+    cash: CashEquipment[];
+    symbol: Symbol[];
 }

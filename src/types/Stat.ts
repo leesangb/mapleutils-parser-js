@@ -32,18 +32,21 @@ const statList = [
     'arcane', // 아케인포스
     'lvNAtk', // lvN당공1
     'lvNmAtk', // lvN당마1
-    'lv10Str', // lv10당힘N
-    'lv10Dex', // lv10당덱N
-    'lv10Int', // lv10당인N
-    'lv10Luk', // lv10당럭N
+    'lv9Str', // lv9당힘N
+    'lv9Dex', // lv9당덱N
+    'lv9Int', // lv9당인N
+    'lv9Luk', // lv9당럭N
     'meso', // 메소획득량
     'drop', // 아이템드롭률
     'hpHeal', // 회복
     'passive', // 패시브1렙
     'reuse', // 재사용
+    'exp', // 획득 경험치
 ] as const;
 
 export type Stat = typeof statList[number];
+
+export type Stats = Partial<Record<Stat, number>>;
 
 export const STAT_MAPPING: Record<string, Stat> = {
     ['STR']: 'str',
@@ -93,10 +96,10 @@ export const STAT_MAPPING: Record<string, Stat> = {
     ['크리티컬 확률%']: 'crit',
     ['크리티컬 데미지']: 'critDmg',
     ['크리티컬 데미지%']: 'critDmg',
-    ['캐릭터 기준 10레벨 당 STR']: 'lv10Str',
-    ['캐릭터 기준 10레벨 당 DEX']: 'lv10Dex',
-    ['캐릭터 기준 10레벨 당 INT']: 'lv10Int',
-    ['캐릭터 기준 10레벨 당 LUK']: 'lv10Luk',
+    ['캐릭터 기준 9레벨 당 STR']: 'lv9Str',
+    ['캐릭터 기준 9레벨 당 DEX']: 'lv9Dex',
+    ['캐릭터 기준 9레벨 당 INT']: 'lv9Int',
+    ['캐릭터 기준 9레벨 당 LUK']: 'lv9Luk',
     ['메소 획득량']: 'meso',
     ['메소 획득량%']: 'meso',
     ['아이템 드롭률']: 'drop',
@@ -104,4 +107,3 @@ export const STAT_MAPPING: Record<string, Stat> = {
     ['HP 회복 아이템 및 회복 스킬 효율']: 'hpHeal',
     ['HP 회복 아이템 및 회복 스킬 효율%']: 'hpHeal',
 };
-

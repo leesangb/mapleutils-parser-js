@@ -1,4 +1,4 @@
-import { Stat } from './Stat';
+import { Stats } from './Stat';
 
 const potentialGrades = [
     'nothing',
@@ -9,12 +9,11 @@ const potentialGrades = [
     'special',
 ] as const;
 
-
 export type PotentialGrade = typeof potentialGrades[number];
 
 export interface Potential {
     grade: PotentialGrade;
-    effects: [Stat, number][];
+    effects: Stats[];
 }
 
 export const POTENTIAL_GRADE_MAPPING: Readonly<Record<string, PotentialGrade>> = {

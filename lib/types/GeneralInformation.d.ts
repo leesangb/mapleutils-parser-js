@@ -12,10 +12,6 @@ export interface GeneralInformation {
      */
     job: string;
     /**
-     * 길드
-     */
-    guild: string;
-    /**
      * 레벨
      */
     level: number;
@@ -28,7 +24,6 @@ export interface GeneralInformation {
      */
     traits: Traits;
 }
-
 export interface Traits {
     /**
      * 카리스마
