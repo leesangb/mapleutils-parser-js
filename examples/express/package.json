@@ -9,6 +9,6 @@
   "author": "Sangbin Lee",
   "dependencies": {
     "express": "^4.18.1",
-    "mapleutils-parser-js": "file:../.."
+    "mapleutils-parser-js": "latest"
   }
 }
