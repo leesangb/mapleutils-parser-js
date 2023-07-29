@@ -7,8 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --minify --legacy-output --clean --sourcemap --out-dir dist",
-    "test": "jest --passWithNoTests",
-    "postversion": "git push --tags && yarn publish . --tag $npm_package_version && git push && echo \"Successfully released version $npm_package_version!\""
+    "release": "pnpm run build && changeset publish"
   },
   "author": "Sangbin Lee <leesangbin@outlook.com>",
   "license": "MIT",
