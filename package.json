@@ -1,6 +1,6 @@
 {
   "name": "mapleutils-parser-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Maplestory unofficial parsing library",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
