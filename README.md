@@ -8,7 +8,7 @@
 ## Usage
 
 ```js
-const { MapleUtilsParser } = require('mapleutils-parser-js');
+import { MapleUtilsParser } from 'mapleutils-parser-js';
 
 const parser = MapleUtilsParser.new();
 parser.getCharacter('상빈')
@@ -52,15 +52,16 @@ const statList = [
     'arcane', // 아케인포스
     'lvNAtk', // lvN당공1
     'lvNmAtk', // lvN당마1
-    'lv10Str', // lv10당힘N
-    'lv10Dex', // lv10당덱N
-    'lv10Int', // lv10당인N
-    'lv10Luk', // lv10당럭N
+    'lv9Str', // lv9당힘N
+    'lv9Dex', // lv9당덱N
+    'lv9Int', // lv9당인N
+    'lv9Luk', // lv9당럭N
     'meso', // 메소획득량
     'drop', // 아이템드롭률
     'hpHeal', // 회복
     'passive', // 패시브1렙
     'reuse', // 재사용
+    'exp', // 획득 경험치
 ] as const;
 
 type Stat = typeof statList[number];
@@ -72,9 +73,10 @@ type Stat = typeof statList[number];
 {
   "name": "상빈",
   "world": "크로아",
+  "guild": "꿈길",
   "job": "듀얼블레이더",
-  "level": 250,
-  "imageUrl": "https://avatar.maplestory.nexon.com/Character/180/POIGMFLMLHDCIPIDGELEJEIKMHAFLCIJPPNEAJDOLBCOPABCKGKDOACCMFANHCDGFKKIMLBPFIEKIAONCPJDEMBCKHNMFAFAKDOAGGOFLPNBLKLIFIKHLLCEBKGEJLJKFAHKENMADKIJBPIICELDDDKMMJFDKCAAPMHFEONOBODENBIDLNCCBGKFODONDEJHKNAPBEOMDGFOEDKNNCFCIMBDNLLFELFICHGKDIOFCFHKCLEKFELIEOHDONFALJLK.png",
+  "level": 253,
+  "imageUrl": "https://avatar.maplestory.nexon.com/Character/180/DIDFBINAMEPMOAFKNCMDJNDMMIDKJBHHNLKKKKKGDDKJBFKBPIKKJEHKBBEMCJPHIEINOKJNNAACNNHECPKOMHHLKDJPCNEELKAGDLLJAAHHMHMIECPIKHGDAKGHDELGKIDBPCIDABNNILCHBDGONHOPDEOILIOFPPJGECFLOHDKOBPMFIIJPJPCKEMPDBPNJCAHDMCKBKGJGJGMDKPNHPEIONFHJKCDALLEJHJJNNGKEOGKEPFGFIKAOGCNHJJO.png",
   "traits": {
     "ambition": 100,
     "insight": 100,
@@ -84,32 +86,30 @@ type Stat = typeof statList[number];
     "charm": 100
   },
   "spec": {
-    "statAtkLow": 5321602,
-    "statAtkHigh": 5912890,
-    "hp": 41465,
-    "mp": 27002,
-    "str": 1640,
-    "dex": 3184,
-    "int": 1566,
-    "luk": 23612,
-    "dmg": 0,
-    "critDmg": 65,
-    "bossDmg": 268,
-    "ignoreDef": 87,
+    "statAtkLow": 5003901,
+    "statAtkHigh": 5559889,
+    "hp": 45230,
+    "mp": 27811,
+    "str": 1781,
+    "dex": 3279,
+    "int": 1597,
+    "luk": 23817,
+    "critDmg": 56,
+    "bossDmg": 272,
+    "ignoreDef": 83,
     "resistance": 54,
     "stance": 100,
-    "def": 30358,
+    "def": 31370,
     "speed": 160,
     "jump": 123,
-    "starForce": 215,
-    "arcaneForce": 1010,
-    "authenticForce": 0,
+    "starForce": 241,
+    "arcaneForce": 1040,
     "hypers": {
       "atk": 24,
       "mAtk": 24,
-      "luk": 180,
-      "crit": 5,
-      "critDmg": 10,
+      "luk": 210,
+      "crit": 7,
+      "critDmg": 11,
       "ignoreDef": 30,
       "dmg": 33,
       "bossDmg": 39
@@ -122,6 +122,52 @@ type Stat = typeof statList[number];
   },
   "equipments": [
     {
+      "name": "골드 메이플리프 엠블렘",
+      "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEOLLEOA.png",
+      "category": "엠블렘",
+      "upgrade": 0,
+      "base": {
+        "str": 10,
+        "dex": 10,
+        "int": 10,
+        "luk": 10,
+        "atk": 2,
+        "mAtk": 2
+      },
+      "scroll": {},
+      "grade": "legendary",
+      "star": 0,
+      "potential": {
+        "grade": "legendary",
+        "effects": [
+          {
+            "atkP": 12
+          },
+          {
+            "atkP": 9
+          },
+          {
+            "dexP": 9
+          }
+        ]
+      },
+      "additional": {
+        "grade": "rare",
+        "effects": [
+          {
+            "dmg": 3
+          },
+          {
+            "def": 50
+          },
+          {
+            "mp": 50
+          }
+        ]
+      },
+      "flame": {}
+    },
+    {
       "name": "아케인셰이드 대거",
       "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEMBJFHA.png",
       "category": "단검 (한손무기)",
@@ -129,53 +175,42 @@ type Stat = typeof statList[number];
       "base": {
         "dex": 100,
         "luk": 100,
-        "hp": 0,
-        "mp": 0,
         "atk": 276,
-        "ignoreDef": 20,
-        "dmg": 0
+        "bossDmg": 30,
+        "ignoreDef": 20
       },
       "scroll": {
         "dex": 40,
         "luk": 64,
         "hp": 255,
         "mp": 255,
-        "atk": 179,
-        "ignoreDef": 0,
-        "dmg": 0
+        "atk": 179
       },
       "grade": "legendary",
       "star": 15,
       "potential": {
         "grade": "legendary",
         "effects": [
-          [
-            "bossDmg",
-            35
-          ],
-          [
-            "dmg",
-            12
-          ],
-          [
-            "crit",
-            12
-          ]
+          {
+            "bossDmg": 35
+          },
+          {
+            "dmg": 12
+          },
+          {
+            "crit": 12
+          }
         ]
       },
       "flame": {
         "dex": 33,
-        "luk": 0,
-        "hp": 0,
         "mp": 1800,
         "atk": 133,
-        "ignoreDef": 0,
         "dmg": 3
       },
-      "soul": [
-        "allStat",
-        15
-      ]
+      "soul": {
+        "allStat": 15
+      }
     }
   ],
   "arcanes": [
@@ -185,21 +220,73 @@ type Stat = typeof statList[number];
         "luk": 1600
       },
       "level": 14,
-      "experience": 130,
+      "experience": 230,
       "requiredExperience": 207
+    },
+    {
+      "name": "아케인심볼 : 츄츄 아일랜드",
+      "stat": {
+        "luk": 1700
+      },
+      "level": 15,
+      "experience": 238,
+      "requiredExperience": 236
+    },
+    {
+      "name": "아케인심볼 : 레헬른",
+      "stat": {
+        "luk": 1500
+      },
+      "level": 13,
+      "experience": 43,
+      "requiredExperience": 180
+    },
+    {
+      "name": "아케인심볼 : 아르카나",
+      "stat": {
+        "luk": 1700
+      },
+      "level": 15,
+      "experience": 355,
+      "requiredExperience": 236
+    },
+    {
+      "name": "아케인심볼 : 모라스",
+      "stat": {
+        "luk": 1800
+      },
+      "level": 16,
+      "experience": 309,
+      "requiredExperience": 267
+    },
+    {
+      "name": "아케인심볼 : 에스페라",
+      "stat": {
+        "luk": 1800
+      },
+      "level": 16,
+      "experience": 162,
+      "requiredExperience": 267
     }
   ],
   "cashEquipments": [
     {
-      "name": "소원 배달원 유니폼 (남)",
+      "name": "8주년 음표 시트린",
       "upgrade": 0,
-      "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEPHLCPH.png",
-      "category": "한벌옷",
+      "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEPCIFLA.png",
+      "category": "모자",
+      "scroll": {},
+      "base": {}
+    },
+    {
+      "name": "발그레 발그레",
+      "upgrade": 0,
+      "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEPDJEJI.png",
+      "category": "얼굴장식",
       "scroll": {},
       "base": {}
     }
   ],
-  "authentics": [],
   "petEquipments": [
     {
       "name": "노란색 모자",
