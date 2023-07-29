@@ -5,9 +5,13 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --minify --legacy-output --clean --sourcemap --out-dir dist",
-    "release": "pnpm run build && changeset publish"
+    "release": "pnpm run build && changeset publish",
+    "package": "pnpm run build && pnpm changeset"
   },
   "author": "Sangbin Lee <leesangbin@outlook.com>",
   "license": "MIT",
