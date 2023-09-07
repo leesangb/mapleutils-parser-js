@@ -1,5 +1,11 @@
 # mapleutils-parser-js
 
+## 0.0.5
+
+### Patch Changes
+
+-   7e875fa: add getCharacterWithErrors
+
 ## 0.0.4
 
 ### Patch Changes
