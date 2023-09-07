@@ -2,7 +2,8 @@ import { Spec } from '../types/Spec';
 import HTMLParser, { HTMLElement } from 'node-html-parser';
 import { Stat, Stats } from '../types/Stat';
 
-const SPEC_TABLE_DATA_SELECTOR = 'div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > table:nth-child(4) > tbody > tr > td';
+const SPEC_TABLE_DATA_SELECTOR =
+    'div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > table:nth-child(4) > tbody > tr > td';
 
 export class SpecParser {
     /**
@@ -12,8 +13,7 @@ export class SpecParser {
     parse(specPageHtml: string): Spec {
         const node: HTMLElement = HTMLParser.parse(specPageHtml);
         const data = node.querySelectorAll(SPEC_TABLE_DATA_SELECTOR);
-        if (!data || data.length !== 20)
-            throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!data || data.length !== 20) throw '올바른 캐릭터 정보 페이지가 아닙니다';
 
         const [
             statAtks,
@@ -36,13 +36,13 @@ export class SpecParser {
             arcaneForce,
             ability,
             hyper,
-        ] = data.map(n => {
+        ] = data.map((n) => {
             const isHyperOrAbility = n.childNodes[0].childNodes.length > 1;
             return isHyperOrAbility
                 ? n.childNodes[0].childNodes
-                    .filter((_, i) => i % 2 === 0)
-                    .map(c => c.text)
-                    .join('\n')
+                      .filter((_, i) => i % 2 === 0)
+                      .map((c) => c.text)
+                      .join('\n')
                 : n.text.replaceAll(',', '').trim();
         });
         const [statAtkLow, statAtkHigh] = statAtks.split(' ~ ');
@@ -75,7 +75,7 @@ export class SpecParser {
 
     private parseHypers(hyper: string): Stats {
         const hypers: Stats = {};
-        hyper.split('\n').forEach(line => {
+        hyper.split('\n').forEach((line) => {
             const value = parseInt(line.replace(/[^\d]/g, ''));
             if (line.startsWith('힘')) {
                 hypers.str = value;
@@ -113,7 +113,7 @@ export class SpecParser {
 
     private parseAbilities(ability: string): Stats {
         const abilities: Stats = {};
-        ability.split('\n').forEach(stat => {
+        ability.split('\n').forEach((stat) => {
             const value = parseInt(stat.replace(/[^\d]/g, ''));
             if (stat.includes('패시브')) {
                 abilities.passive = 1;
@@ -151,16 +151,14 @@ export class SpecParser {
                 abilities.drop = value;
             } else {
                 for (const defaultStat of ['str', 'dex', 'int', 'luk'] as Stat[]) {
-                    stat.split(',')
-                        .forEach(line => {
-                            if (line.includes(defaultStat.toUpperCase())) {
-                                const value = parseInt(line.replace(/[^\d]/g, ''));
-                                abilities[defaultStat] = (abilities[defaultStat] || 0) + value;
-                            }
-                        });
+                    stat.split(',').forEach((line) => {
+                        if (line.includes(defaultStat.toUpperCase())) {
+                            const value = parseInt(line.replace(/[^\d]/g, ''));
+                            abilities[defaultStat] = (abilities[defaultStat] || 0) + value;
+                        }
+                    });
                 }
             }
-
         });
         return abilities;
     }

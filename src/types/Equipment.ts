@@ -60,8 +60,7 @@ export interface Equipment extends EquipmentBase {
     soul?: Stats;
 }
 
-export interface CashEquipment extends EquipmentBase {
-}
+export interface CashEquipment extends EquipmentBase {}
 
 export interface Equipments {
     base?: Equipment[];

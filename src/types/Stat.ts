@@ -44,7 +44,7 @@ const statList = [
     'exp', // 획득 경험치
 ] as const;
 
-export type Stat = typeof statList[number];
+export type Stat = (typeof statList)[number];
 
 export type Stats = Partial<Record<Stat, number>>;
 

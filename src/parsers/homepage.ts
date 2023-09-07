@@ -5,10 +5,14 @@ const CHARACTER_LINKS_SELECTOR = 'div.rank_table_wrap > table > tbody > tr > td.
 const EQUIPMENT_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nth-child(3) > a';
 const PET_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nth-child(10) > a';
 
-const BASE_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > div.weapon_wrap > ul > li a';
-const CASH_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div.cash_weapon_wrap > ul > li a';
-const SYMBOL_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab03_con_wrap > div.arcane_weapon_wrap > ul > li a';
-const PET_EQUIPMENT_LINKS_SELECTOR = '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div > ul > li > h2 > span > a';
+const BASE_EQUIPMENT_LINKS_SELECTOR =
+    '#container > div.con_wrap > div.contents_wrap > div > div.tab01_con_wrap > div.weapon_wrap > ul > li a';
+const CASH_EQUIPMENT_LINKS_SELECTOR =
+    '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div.cash_weapon_wrap > ul > li a';
+const SYMBOL_EQUIPMENT_LINKS_SELECTOR =
+    '#container > div.con_wrap > div.contents_wrap > div > div.tab03_con_wrap > div.arcane_weapon_wrap > ul > li a';
+const PET_EQUIPMENT_LINKS_SELECTOR =
+    '#container > div.con_wrap > div.contents_wrap > div > div.tab02_con_wrap > div > ul > li > h2 > span > a';
 
 export interface EquipmentLinks {
     base: string[];
@@ -29,8 +33,7 @@ export class HomePageParser {
         const node = HTMLParser.parse(rankingPageHtml);
         const links: NhpHTMLElement[] = node.querySelectorAll(CHARACTER_LINKS_SELECTOR);
         const link = links.find((linkNode: NhpHTMLElement) => linkNode.innerText.toLowerCase() === name.toLowerCase());
-        if (!link)
-            throw '올바른 랭킹 링크가 아니거나 캐릭터를 찾을 수 없습니다';
+        if (!link) throw '올바른 랭킹 링크가 아니거나 캐릭터를 찾을 수 없습니다';
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
@@ -41,8 +44,7 @@ export class HomePageParser {
     ensureIsPublic(html: string, scope: string) {
         const node = HTMLParser.parse(html);
         const privateDiv: NhpHTMLElement | null = node.querySelector('div.private2');
-        if (privateDiv)
-            throw `캐릭터 정보가 비공개입니다 (${scope})`;
+        if (privateDiv) throw `캐릭터 정보가 비공개입니다 (${scope})`;
     }
 
     /**
@@ -52,8 +54,7 @@ export class HomePageParser {
     getEquipmentPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(EQUIPMENT_LINK_SELECTOR);
-        if (!link)
-            throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!link) throw '올바른 캐릭터 정보 페이지가 아닙니다';
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
@@ -64,8 +65,7 @@ export class HomePageParser {
     getPetPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(PET_LINK_SELECTOR);
-        if (!link)
-            throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!link) throw '올바른 캐릭터 정보 페이지가 아닙니다';
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
@@ -80,9 +80,11 @@ export class HomePageParser {
         const symbolLinks: NhpHTMLElement[] = node.querySelectorAll(SYMBOL_EQUIPMENT_LINKS_SELECTOR);
 
         return {
-            base: baseLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
-            cash: cashLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
-            symbol: symbolLinks.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME),
+            base: baseLinks.map((e) => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter((url) => url !== MAPLESTORY_HOME),
+            cash: cashLinks.map((e) => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter((url) => url !== MAPLESTORY_HOME),
+            symbol: symbolLinks
+                .map((e) => `${MAPLESTORY_HOME}${e.attrs['href']}`)
+                .filter((url) => url !== MAPLESTORY_HOME),
         };
     }
 
@@ -93,6 +95,6 @@ export class HomePageParser {
     getPetEquipmentLinks(petEquipmentPageHtml: string): string[] {
         const node = HTMLParser.parse(petEquipmentPageHtml);
         const links: NhpHTMLElement[] = node.querySelectorAll(PET_EQUIPMENT_LINKS_SELECTOR);
-        return links.map(e => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter(url => url !== MAPLESTORY_HOME);
+        return links.map((e) => `${MAPLESTORY_HOME}${e.attrs['href']}`).filter((url) => url !== MAPLESTORY_HOME);
     }
 }

@@ -11,7 +11,12 @@ const ITEM_OPTIONS_SELECTOR = 'div.stet_info > ul > li';
 const ITEM_GRADE_SELECTOR = 'div.item_title > div.item_memo > div.item_memo_sel';
 
 type EquipmentStat = Record<'base' | 'scroll' | 'flame', Stats>;
-type EquipmentOption = EquipmentStat & { potential?: Potential, additional?: Potential, soul?: Stats, scissors?: number };
+type EquipmentOption = EquipmentStat & {
+    potential?: Potential;
+    additional?: Potential;
+    soul?: Stats;
+    scissors?: number;
+};
 type SymbolOption = Record<'level' | 'experience' | 'requiredExperience', number>;
 
 export class EquipmentParser {
@@ -108,8 +113,7 @@ export class EquipmentParser {
         for (const optionNode of optionNodes) {
             const nameNode = optionNode.querySelector('div.stet_th')!;
             const name = nameNode.text.trim();
-            if (!name || name === '공격속도' || name === '기타')
-                continue;
+            if (!name || name === '공격속도' || name === '기타') continue;
 
             const statNode = optionNode.querySelector('div.point_td')!;
 
@@ -130,9 +134,7 @@ export class EquipmentParser {
                 continue;
             }
             if (name.startsWith('Max') && statNode.text.includes('%')) {
-                const stat: Stat = name === 'MaxHP'
-                    ? 'hpP'
-                    : 'mpP';
+                const stat: Stat = name === 'MaxHP' ? 'hpP' : 'mpP';
                 option.base[stat] = parseInt(statNode.text.trim());
                 continue;
             }
@@ -156,12 +158,13 @@ export class EquipmentParser {
 
     private parseGrade(node: HTMLElement): PotentialGrade {
         const gradeText = node.querySelector(ITEM_GRADE_SELECTOR)?.text.trim();
-        return gradeText
-            ? POTENTIAL_GRADE_MAPPING[gradeText] || 'nothing'
-            : 'nothing';
+        return gradeText ? POTENTIAL_GRADE_MAPPING[gradeText] || 'nothing' : 'nothing';
     }
 
-    private parseStat(name: string, node: HTMLElement): Record<'base' | 'scroll' | 'flame', [Stat, number | undefined]> {
+    private parseStat(
+        name: string,
+        node: HTMLElement
+    ): Record<'base' | 'scroll' | 'flame', [Stat, number | undefined]> {
         const stat = STAT_MAPPING[name];
         const line = node.innerText.trim();
         const parenthesisIndex = line.indexOf('(');
@@ -176,7 +179,7 @@ export class EquipmentParser {
         const [base, flame, scroll] = line
             .substring(parenthesisIndex + 1, line.length - 1)
             .split('+')
-            .map(v => parseInt(v.trim()));
+            .map((v) => parseInt(v.trim()));
 
         return {
             base: [stat, base || undefined],
@@ -187,28 +190,24 @@ export class EquipmentParser {
 
     private parseSoul(node: HTMLElement): Stats | undefined {
         const textNode = node.childNodes[2];
-        if (!textNode)
-            return;
+        if (!textNode) return;
 
-        const option = textNode.text.split(':').map(s => s.trim());
-        if (option.length !== 2)
-            return;
+        const option = textNode.text.split(':').map((s) => s.trim());
+        if (option.length !== 2) return;
         const [name, value] = option;
         const stat = STAT_MAPPING[name];
-        if (!stat)
-            return;
+        if (!stat) return;
 
         return { [stat]: parseInt(value) };
     }
 
     private parsePotential(nameNode: HTMLElement, valueNode: HTMLElement): Potential | undefined {
         const gradeName = nameNode.querySelector('font')?.text;
-        if (!gradeName)
-            return;
+        if (!gradeName) return;
 
         const effects = valueNode.childNodes
             .filter((_, i) => i % 2 === 0)
-            .map(n => {
+            .map((n) => {
                 const [name, value] = n.text.split(':');
                 const statName = name.trim() + (value?.includes('%') ? '%' : '');
 
@@ -219,7 +218,7 @@ export class EquipmentParser {
 
                 return { [stat]: parseInt(value) };
             })
-            .filter(e => e) as Record<Stat, number>[];
+            .filter((e) => e) as Record<Stat, number>[];
 
         return {
             grade: POTENTIAL_GRADE_MAPPING[gradeName] || 'nothing',
@@ -237,7 +236,7 @@ export class EquipmentParser {
         return imageNode?.attrs['src'] || '';
     }
 
-    private parseName(node: HTMLElement, html: string): { name: string, upgrade: number, star: number } {
+    private parseName(node: HTMLElement, html: string): { name: string; upgrade: number; star: number } {
         const h1 = node.querySelector(ITEM_NAME_SELECTOR);
         if (!h1) {
             console.log(html);
@@ -254,9 +253,7 @@ export class EquipmentParser {
             h1.childNodes.shift();
         }
         const [nameNode, starNode] = h1.childNodes;
-        const [name, upgrade] = nameNode.text
-            .replaceAll('&nbsp;', '')
-            .split('(+');
+        const [name, upgrade] = nameNode.text.replaceAll('&nbsp;', '').split('(+');
 
         return {
             name: name.trim(),
