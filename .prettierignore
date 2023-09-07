@@ -5,3 +5,5 @@ node_modules
 *.json
 *.md
 .prettierrc
+*.yaml
+*.yml

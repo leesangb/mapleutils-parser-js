@@ -1,15 +1,8 @@
 import { Stats } from './Stat';
 
-const potentialGrades = [
-    'nothing',
-    'rare',
-    'epic',
-    'unique',
-    'legendary',
-    'special',
-] as const;
+const potentialGrades = ['nothing', 'rare', 'epic', 'unique', 'legendary', 'special'] as const;
 
-export type PotentialGrade = typeof potentialGrades[number];
+export type PotentialGrade = (typeof potentialGrades)[number];
 
 export interface Potential {
     grade: PotentialGrade;
