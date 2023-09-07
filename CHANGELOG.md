@@ -1,5 +1,11 @@
 # mapleutils-parser-js
 
+## 0.0.4
+
+### Patch Changes
+
+-   d6bed75: fix example
+
 ## 0.0.3
 
 ### Patch Changes
