@@ -35,6 +35,10 @@ export interface EquipmentBase {
 
 export interface Equipment extends EquipmentBase {
     /**
+     * 레벨제한
+     */
+    level: number;
+    /**
      * 총 등급
      */
     grade: PotentialGrade;
