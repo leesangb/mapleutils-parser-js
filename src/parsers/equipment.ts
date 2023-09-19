@@ -186,7 +186,7 @@ export class EquipmentParser {
         const [base, flame, scroll] = line
             .substring(parenthesisIndex + 1, line.length - 1)
             .split('+')
-            .map((v) => parseInt(v.trim()));
+            .map((v : string) => parseInt(v.trim()));
 
         return {
             base: [stat, base || undefined],
@@ -199,7 +199,7 @@ export class EquipmentParser {
         const textNode = node.childNodes[2];
         if (!textNode) return;
 
-        const option = textNode.text.split(':').map((s) => s.trim());
+        const option = textNode.text.split(':').map((s: string) => s.trim());
         if (option.length !== 2) return;
         const [name, value] = option;
         const stat = STAT_MAPPING[name];
@@ -213,8 +213,8 @@ export class EquipmentParser {
         if (!gradeName) return;
 
         const effects = valueNode.childNodes
-            .filter((_, i) => i % 2 === 0)
-            .map((n) => {
+            .filter((_: any, i: number) => i % 2 === 0)
+            .map((n: { text: string }) => {
                 const [name, value] = n.text.split(':');
                 const statName = name.trim() + (value?.includes('%') ? '%' : '');
 
@@ -225,7 +225,7 @@ export class EquipmentParser {
 
                 return { [stat]: parseInt(value) };
             })
-            .filter((e) => e) as Record<Stat, number>[];
+            .filter((e: any) => e) as Record<Stat, number>[];
 
         return {
             grade: POTENTIAL_GRADE_MAPPING[gradeName] || 'nothing',
