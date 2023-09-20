@@ -1,5 +1,6 @@
 import HTMLParser, { HTMLElement as NhpHTMLElement } from 'node-html-parser';
 import { MAPLESTORY_HOME } from '../constants/links';
+import { NotFoundError, PrivateInformationError, NotValidSpecPageError } from '../errors';
 
 const CHARACTER_LINKS_SELECTOR = 'div.rank_table_wrap > table > tbody > tr > td.left > dl > dt > a';
 const EQUIPMENT_LINK_SELECTOR = '#container > div.con_wrap > div.lnb_wrap > ul > li:nth-child(3) > a';
@@ -33,7 +34,7 @@ export class HomePageParser {
         const node = HTMLParser.parse(rankingPageHtml);
         const links: NhpHTMLElement[] = node.querySelectorAll(CHARACTER_LINKS_SELECTOR);
         const link = links.find((linkNode: NhpHTMLElement) => linkNode.innerText.toLowerCase() === name.toLowerCase());
-        if (!link) throw '올바른 랭킹 링크가 아니거나 캐릭터를 찾을 수 없습니다';
+        if (!link) throw new NotFoundError(name);
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
@@ -44,7 +45,7 @@ export class HomePageParser {
     ensureIsPublic(html: string, scope: string) {
         const node = HTMLParser.parse(html);
         const privateDiv: NhpHTMLElement | null = node.querySelector('div.private2');
-        if (privateDiv) throw `캐릭터 정보가 비공개입니다 (${scope})`;
+        if (privateDiv) throw new PrivateInformationError(scope);
     }
 
     /**
@@ -54,7 +55,7 @@ export class HomePageParser {
     getEquipmentPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(EQUIPMENT_LINK_SELECTOR);
-        if (!link) throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!link) throw new NotValidSpecPageError();
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
@@ -65,7 +66,7 @@ export class HomePageParser {
     getPetPageLink(characterLinkPageHtml: string): string {
         const node = HTMLParser.parse(characterLinkPageHtml);
         const link = node.querySelector(PET_LINK_SELECTOR);
-        if (!link) throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!link) throw new NotValidSpecPageError();
         return `${MAPLESTORY_HOME}${link.attrs['href']}`;
     }
 
