@@ -1,5 +1,11 @@
 # mapleutils-parser-js
 
+## 0.0.6
+
+### Patch Changes
+
+-   c8e9c08: add level to equipment parser
+
 ## 0.0.5
 
 ### Patch Changes

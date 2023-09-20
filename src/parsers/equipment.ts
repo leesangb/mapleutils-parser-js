@@ -33,7 +33,7 @@ export class EquipmentParser {
         const category = this.parseCategory(node);
         const { base, scroll, flame, potential, additional, soul, scissors } = this.parseOptions(node);
         const grade = this.parseGrade(node);
-        const level = this.parseLevel(equipmentHtml) - (flame['reqLevel'] ?? 0);
+        const level = this.parseLevel(node) - (flame['reqLevel'] ?? 0);
 
         return {
             name,
@@ -106,7 +106,7 @@ export class EquipmentParser {
     }
 
     private parseLevel(node: HTMLElement) : number {
-        return Number.parseInt(node.querySelector(ITEM_LEVEL_SELECTOR)?.text.trim() ?? 0);
+        return Number.parseInt(node.querySelector(ITEM_LEVEL_SELECTOR)?.text.trim() ?? '0');
     }
 
     private parseOptions(node: HTMLElement): EquipmentOption {
