@@ -1,5 +1,11 @@
 # mapleutils-parser-js
 
+## 0.0.7
+
+### Patch Changes
+
+-   5a02a48: 에러객체 추가
+
 ## 0.0.6
 
 ### Patch Changes
