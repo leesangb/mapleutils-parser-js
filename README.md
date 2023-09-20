@@ -17,8 +17,21 @@ parser.getCharacter({
     pet: true,
     equip: true,
     symbol: true
-})
-    .then((character) => console.log(character));
+}).then((character) => console.log(character));
+
+parser.getCharacterWithErrors({
+    name: '상빈',
+    cash: true,
+    pet: true,
+    equip: true,
+    symbol: true
+}).then(({data: character, errors}) => {
+    console.log(character); // 캐릭터 정보
+    errors?.equipments()?.then(equipments => console.log(equipments)); // 실패한 장비목록 재시도하는 콜백
+    errors?.arcanes()?.then(symbols => console.log(symbols)); // 실패한 아케인심볼 목록 재시도하는 콜백
+    errors?.petEquipments()?.then(petEquipments => console.log(petEquipments)); // 실패한 펫장비 목록 재시도하는 콜백
+    errors?.cashEquipments()?.then(cashEquipments => console.log(cashEquipments)); // 실패한 캐시장비 목록 재시도하는 콜백
+});
 ```
 
 ## 파싱되는 스탯
@@ -129,6 +142,7 @@ type Stat = typeof statList[number];
   "equipments": [
     {
       "name": "골드 메이플리프 엠블렘",
+      "level": 100,
       "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEOLLEOA.png",
       "category": "엠블렘",
       "upgrade": 0,
@@ -175,6 +189,7 @@ type Stat = typeof statList[number];
     },
     {
       "name": "아케인셰이드 대거",
+      "level": 200,
       "imageUrl": "https://avatar.maplestory.nexon.com/ItemIcon/KEMBJFHA.png",
       "category": "단검 (한손무기)",
       "upgrade": 8,
@@ -305,3 +320,15 @@ type Stat = typeof statList[number];
   ]
 }
 ```
+
+##
+
+## 에러 목록
+
+- `NotFoundError`: 캐릭터 또는 캐릭터 상세정보를 찾을 수 없을 때
+- `NotValidHtmlNodeError`: 올바른 HTML 노드가 아닐 때
+- `NotValidSpecPageError`: 올바른 스펙 페이지가 아닐 때
+- `OpenPageError`: 페이지를 열 수 없을 때
+- `PrivateInformationError`: 비공개 정보일 때
+- `RankingSearchError`: 공식 홈페이지 랭킹 검색에 실패했을 때
+- `RetryError`: 재시도를 실패했을 때
