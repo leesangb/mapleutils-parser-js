@@ -42,6 +42,7 @@ const statList = [
     'passive', // 패시브1렙
     'reuse', // 재사용
     'exp', // 획득 경험치
+    'reqLevel' // 착용 레벨 감소
 ] as const;
 
 export type Stat = (typeof statList)[number];
@@ -106,4 +107,5 @@ export const STAT_MAPPING: Record<string, Stat> = {
     ['아이템 드롭률%']: 'drop',
     ['HP 회복 아이템 및 회복 스킬 효율']: 'hpHeal',
     ['HP 회복 아이템 및 회복 스킬 효율%']: 'hpHeal',
+    ['착용 레벨 감소']: 'reqLevel'
 };

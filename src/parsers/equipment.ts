@@ -152,6 +152,10 @@ export class EquipmentParser {
                 option.flame.allStatP = flame[1];
                 continue;
             }
+            if(name.startsWith('착용 레벨') && statNode.text.includes('-')) {
+                const stat: Stat = 'reqLevel';
+                option.flame[stat] = parseInt(statNode.text.trim());
+            }
             if (STAT_MAPPING[name]) {
                 const { base, scroll, flame } = this.parseStat(name, statNode);
                 option.base[base[0]] = base[1];
