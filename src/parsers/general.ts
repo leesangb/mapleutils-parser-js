@@ -1,4 +1,5 @@
 import HTMLParser, { HTMLElement } from 'node-html-parser';
+import { NotValidSpecPageError, NotFoundError } from '../errors';
 import { GeneralInformation, Traits } from '../types/GeneralInformation';
 
 const CHARACTER_TABLE_DATA_SELECTOR =
@@ -13,7 +14,7 @@ export class GeneralInformationParser {
     parse(specPageHtml: string): GeneralInformation {
         const node: HTMLElement = HTMLParser.parse(specPageHtml);
         const data = node.querySelectorAll(CHARACTER_TABLE_DATA_SELECTOR);
-        if (!data || data.length !== 6) throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!data || data.length !== 6) throw new NotValidSpecPageError();
 
         const [
             world,
@@ -37,25 +38,25 @@ export class GeneralInformationParser {
 
     private parseName(node: HTMLElement): string {
         const name = node.querySelector(CHARACTER_NAME_SELECTOR)?.text;
-        if (!name) throw '캐릭터 이름을 찾을 수 없습니다';
+        if (!name) throw new NotFoundError('이름');
         return name.substring(0, name.length - 1);
     }
 
     private parseLevel(node: HTMLElement): number {
         const level = node.querySelector(CHARACTER_LEVEL_SELECTOR)?.text.replace(/[^\d]/g, '');
-        if (!level) throw '캐릭터 레벨을 찾을 수 없습니다';
+        if (!level) throw new NotFoundError('레벨');
         return parseInt(level);
     }
 
     private parseImageUrl(node: HTMLElement): string {
         const imageUrl = node.querySelector(CHARACTER_IMAGE_SELECTOR)?.attrs['src'];
-        if (!imageUrl) throw '캐릭터 이미지를 찾을 수 없습니다';
+        if (!imageUrl) throw new NotFoundError('이미지');
         return imageUrl;
     }
 
     private parseTraits(node: HTMLElement): Traits {
         const traitNodes = node.querySelectorAll(CHARACTER_TRAITS_SELECTOR);
-        if (traitNodes.length !== 6) throw '캐릭터 성향을 찾을 수 없습니다';
+        if (traitNodes.length !== 6) throw new NotFoundError('성향');
 
         const [ambition, insight, willpower, diligence, empathy, charm] = traitNodes.map((n) => parseInt(n.text));
         return {

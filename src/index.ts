@@ -1,4 +1,5 @@
 import { MAPLESTORY_RANKING_SEARCH } from './constants/links';
+import { OpenPageError,RankingSearchError,RetryError } from './errors';
 import { EquipmentParser } from './parsers/equipment';
 import { GeneralInformationParser } from './parsers/general';
 import { HomePageParser } from './parsers/homepage';
@@ -165,7 +166,7 @@ export class MapleUtilsParser {
 
     private async getCharacterLink(name: string): Promise<string> {
         const rankingSearch = await fetch(`${MAPLESTORY_RANKING_SEARCH}?c=${encodeURI(name)}`);
-        if (rankingSearch.status !== 200) throw `'${name}' 공식 홈페이지 랭킹 검색 오류`;
+        if (rankingSearch.status !== 200) throw new RankingSearchError(name);
 
         const searchData = await rankingSearch.text();
         let characterLink = '';
@@ -173,7 +174,7 @@ export class MapleUtilsParser {
             characterLink = this.homePageParser.getCharacterLink(name, searchData);
         } catch (e) {
             const rebootSearch = await fetch(`${MAPLESTORY_RANKING_SEARCH}?c=${encodeURI(name)}&w=254`);
-            if (rankingSearch.status !== 200) throw `'${name}' 공식 홈페이지 랭킹 검색 오류`;
+            if (rankingSearch.status !== 200) throw new RankingSearchError(name);
             const rebootSearchData = await rebootSearch.text();
             characterLink = this.homePageParser.getCharacterLink(name, rebootSearchData);
         }
@@ -182,7 +183,7 @@ export class MapleUtilsParser {
 
     private async getSpecPage(characterLink: string): Promise<string> {
         const characterSpecPage = await fetch(characterLink);
-        if (characterSpecPage.status !== 200) throw '캐릭터 정보 페이지 열기 오류';
+        if (characterSpecPage.status !== 200) throw new OpenPageError('캐릭터 정보');
 
         const specPageData = await characterSpecPage.text();
         this.homePageParser.ensureIsPublic(specPageData, '기본 정보');
@@ -192,7 +193,7 @@ export class MapleUtilsParser {
 
     private async getEquipments(equipmentLink: string, e: boolean, c: boolean, s: boolean): Promise<EquipmentsResult> {
         const equipmentPage = await fetch(equipmentLink);
-        if (equipmentPage.status !== 200) throw '장비 페이지 열기 오류';
+        if (equipmentPage.status !== 200) throw new OpenPageError('장비');
         const equipmentPageData = await equipmentPage.text();
         this.homePageParser.ensureIsPublic(equipmentPageData, '장비');
 
@@ -228,7 +229,7 @@ export class MapleUtilsParser {
                     ? () =>
                           this.getAllHtmls(failedBaseLinks).then(({ success, error }) => {
                               if (error.length) {
-                                  throw 'base 재시도 실패';
+                                  throw new RetryError('일반장비');
                               }
                               return success.map(this.equipmentParser.parseBase);
                           })
@@ -237,7 +238,7 @@ export class MapleUtilsParser {
                     ? () =>
                           this.getAllHtmls(failedCashLinks).then(({ success, error }) => {
                               if (error.length) {
-                                  throw 'cash 재시도 실패';
+                                  throw new RetryError('캐시장비');
                               }
                               return success.map(this.equipmentParser.parseCash);
                           })
@@ -246,7 +247,7 @@ export class MapleUtilsParser {
                     ? () =>
                           this.getAllHtmls(failedSymbolLinks).then(({ success, error }) => {
                               if (error.length) {
-                                  throw 'symbol 재시도 실패';
+                                  throw new RetryError('심볼');
                               }
                               return success.map(this.equipmentParser.parseSymbol);
                           })
@@ -257,7 +258,7 @@ export class MapleUtilsParser {
 
     private async getPetEquipments(petEquipmentLink: string): Promise<CashEquipmentsResult> {
         const equipmentPage = await fetch(petEquipmentLink);
-        if (equipmentPage.status !== 200) throw '펫장비 페이지 열기 오류';
+        if (equipmentPage.status !== 200) throw new OpenPageError('펫장비');
 
         const equipmentPageData = await equipmentPage.text();
         this.homePageParser.ensureIsPublic(equipmentPageData, '펫');
@@ -271,7 +272,7 @@ export class MapleUtilsParser {
                 ? () =>
                       this.getAllHtmls(equipmentHtml.error).then(({ success, error }) => {
                           if (error.length) {
-                              throw '펫 장비 재시도 실패';
+                              throw new RetryError('펫장비');
                           }
                           return success.map(this.equipmentParser.parseCash);
                       })
@@ -296,7 +297,7 @@ export class MapleUtilsParser {
                     .then((response) => {
                         if (response.status !== 200) {
                             console.log(`'${link}' 정보를 가져오는데 실패했습니다`, response.status);
-                            throw null;
+                            throw new OpenPageError(link);
                         }
                         return response.json();
                     })
@@ -316,3 +317,5 @@ export class MapleUtilsParser {
         return { success: htmls, error: failedLinks };
     }
 }
+
+export * from './errors';

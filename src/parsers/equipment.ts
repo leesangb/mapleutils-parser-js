@@ -1,4 +1,5 @@
 import HTMLParser, { HTMLElement } from 'node-html-parser';
+import { NotValidHtmlNodeError } from '../errors';
 import { CashEquipment, Equipment } from '../types/Equipment';
 import { Potential, POTENTIAL_GRADE_MAPPING, PotentialGrade } from '../types/Potential';
 import { Stat, STAT_MAPPING, Stats } from '../types/Stat';
@@ -247,7 +248,7 @@ export class EquipmentParser {
         const h1 = node.querySelector(ITEM_NAME_SELECTOR);
         if (!h1) {
             console.log(html);
-            throw '올바른 html 노드가 아닙니다';
+            throw new NotValidHtmlNodeError(node, ITEM_NAME_SELECTOR);
         }
 
         const hasSoulWeapon = h1.childNodes.length > 3;

@@ -1,3 +1,4 @@
+import { NotValidSpecPageError } from '../errors';
 import { Spec } from '../types/Spec';
 import HTMLParser, { HTMLElement } from 'node-html-parser';
 import { Stat, Stats } from '../types/Stat';
@@ -13,7 +14,7 @@ export class SpecParser {
     parse(specPageHtml: string): Spec {
         const node: HTMLElement = HTMLParser.parse(specPageHtml);
         const data = node.querySelectorAll(SPEC_TABLE_DATA_SELECTOR);
-        if (!data || data.length !== 20) throw '올바른 캐릭터 정보 페이지가 아닙니다';
+        if (!data || data.length !== 20) throw new NotValidSpecPageError();
 
         const [
             statAtks,
