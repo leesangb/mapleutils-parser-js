@@ -29,11 +29,11 @@ export class EquipmentParser {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
         const { name, upgrade, star } = this.parseName(node, equipmentHtml);
-        const level = this.parseLevel(equipmentHtml);
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
         const { base, scroll, flame, potential, additional, soul, scissors } = this.parseOptions(node);
         const grade = this.parseGrade(node);
+        const level = this.parseLevel(equipmentHtml) - (flame['reqLevel'] ?? 0);
 
         return {
             name,
