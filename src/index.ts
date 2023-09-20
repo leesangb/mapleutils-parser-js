@@ -1,5 +1,5 @@
 import { MAPLESTORY_RANKING_SEARCH } from './constants/links';
-import { OpenPageError,RankingSearchError,RetryError } from './errors';
+import { OpenPageError, RankingSearchError, RetryError } from './errors';
 import { EquipmentParser } from './parsers/equipment';
 import { GeneralInformationParser } from './parsers/general';
 import { HomePageParser } from './parsers/homepage';

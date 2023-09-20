@@ -106,7 +106,7 @@ export class EquipmentParser {
         };
     }
 
-    private parseLevel(node: HTMLElement) : number {
+    private parseLevel(node: HTMLElement): number {
         return Number.parseInt(node.querySelector(ITEM_LEVEL_SELECTOR)?.text.trim() ?? '0');
     }
 
@@ -187,7 +187,7 @@ export class EquipmentParser {
         const [base, flame, scroll] = line
             .substring(parenthesisIndex + 1, line.length - 1)
             .split('+')
-            .map((v : string) => parseInt(v.trim()));
+            .map((v: string) => parseInt(v.trim()));
 
         return {
             base: [stat, base || undefined],
