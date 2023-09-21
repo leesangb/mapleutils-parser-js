@@ -29,11 +29,11 @@ export class EquipmentParser {
         const node: HTMLElement = HTMLParser.parse(equipmentHtml);
 
         const { name, upgrade, star } = this.parseName(node, equipmentHtml);
+        const level = this.parseLevel(node);
         const imageUrl = this.parseImage(node);
         const category = this.parseCategory(node);
         const { base, scroll, flame, potential, additional, soul, scissors } = this.parseOptions(node);
         const grade = this.parseGrade(node);
-        const level = this.parseLevel(node) - (flame['reqLevel'] ?? 0);
 
         return {
             name,
@@ -153,8 +153,7 @@ export class EquipmentParser {
                 continue;
             }
             if(name.startsWith('착용 레벨') && statNode.text.includes('-')) {
-                const stat: Stat = 'reqLevel';
-                option.flame[stat] = parseInt(statNode.text.trim());
+                option.flame.reqLevel = parseInt(statNode.text.trim());
             }
             if (STAT_MAPPING[name]) {
                 const { base, scroll, flame } = this.parseStat(name, statNode);
